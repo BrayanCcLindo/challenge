@@ -38,7 +38,6 @@ export default function FirstStep({
 
   const precioMax = Math.max(...precios);
 
-  //
   const planRecomendado = [...userPlans].find(
     (plan) => plan.price === precioMax,
   );

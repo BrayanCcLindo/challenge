@@ -3,8 +3,8 @@ import LandingForm from "@/components/form/LandingForm";
 
 export default function Homepage() {
   return (
-    <>
-      <div className="flex items-center justify-center px-6 py-8 font-poppins">
+    <div className="flex flex-col flex-grow">
+      <main className="flex items-center justify-center flex-grow px-6 font-poppins sm:py-8">
         <img
           src="/images/purple-blur.png"
           className="fixed -bottom-96 -left-10 -z-10 sm:bottom-0 sm:left-0"
@@ -59,8 +59,9 @@ export default function Homepage() {
             <LandingForm />
           </div>
         </div>
-      </div>
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 }
