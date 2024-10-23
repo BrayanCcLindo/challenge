@@ -3,25 +3,26 @@ import { ArrowLeft, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SecondStep from "@/components/steps/SecondStep";
 import { PlanType } from "@/types/type";
-import { useNavigate } from "react-router-dom";
 import FirstStep from "@/components/steps/FirstStep";
-import { useGetUser } from "@/api/getUser/getUser";
 import Loader from "@/components/status/Loader";
 import Error from "@/components/status/Error";
+import { useGetUser } from "@/api/getUser/getUser";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   { id: 1, title: "Planes y coberturas" },
   { id: 2, title: "Resumen" },
 ];
 
-export default function Component() {
+export default function Plans() {
+  const { user, isUserError, isUserLoading, isUserSucces } = useGetUser();
+
   const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   const [selectedOption, setSelectedOption] = useState<"self" | "other" | null>(
     null,
   );
-  const { user, isUserLoading, isUserError, isUserSuccess } = useGetUser();
 
   const handleNext = () => {
     if (activeStep < steps.length) {
@@ -40,7 +41,7 @@ export default function Component() {
   return (
     <div className="min-h-screen w-full space-y-10 bg-[#F8F7FF] font-lato text-gray-400">
       <nav className="mb-4 flex items-center justify-center bg-[#EDEFFC] p-4">
-        <div className="items-center hidden space-x-2 text-sm md:flex">
+        <div className="hidden items-center space-x-2 text-sm md:flex">
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center gap-4">
               <div
@@ -71,7 +72,7 @@ export default function Component() {
           <Button
             onClick={handleBack}
             variant="ghost"
-            className="w-8 h-8 p-0 text-gray-200 border-2 border-gray-200 rounded-full"
+            className="h-8 w-8 rounded-full border-2 border-gray-200 p-0 text-gray-200"
           >
             <ChevronLeft />
           </Button>
@@ -87,10 +88,10 @@ export default function Component() {
           variant="ghost"
           className="p-0 text-[#4f4fff]"
         >
-          <ArrowLeft className="w-4 h-4" /> Volver
+          <ArrowLeft className="h-4 w-4" /> Volver
         </Button>
 
-        {isUserSuccess && user && !isUserLoading && !isUserError && (
+        {isUserSucces && user && !isUserLoading && !isUserError && (
           <>
             {activeStep === 1 && (
               <FirstStep

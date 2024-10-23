@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Check, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "../ui/button";
@@ -15,6 +15,7 @@ export default function FirstStep({
   user,
 }: FirstStepType) {
   const [currentMobileCard, setCurrentMobileCard] = useState(0);
+  console.log(handleNext);
 
   const { plans, isSuccess, isError, isLoading } = useGetPlans();
 
@@ -22,7 +23,7 @@ export default function FirstStep({
   const fechaNac = new Date(user.birthDay).getFullYear();
   const edad = fechaActual - fechaNac;
 
-  const userPlans = [...plans.filter((plan) => plan.age >= edad)];
+  const userPlans = [...(plans || [])].filter((plan) => plan.age >= edad);
 
   const nextMobileCard = () => {
     setCurrentMobileCard((prev) => (prev + 1) % userPlans.length);
@@ -41,6 +42,17 @@ export default function FirstStep({
   const planRecomendado = [...userPlans].find(
     (plan) => plan.price === precioMax,
   );
+  const cardsRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    cardsRef.current?.scrollIntoView({
+      behavior: "smooth",
+
+      block: "start",
+    });
+  };
+
+  useLayoutEffect(scrollToBottom, [selectedOption]);
 
   return (
     <div className="space-y-8 text-gray-400">
@@ -48,16 +60,14 @@ export default function FirstStep({
         <div className="space-y-8">
           <div className="space-y-2 text-center">
             <h1 className="mb-2 text-2xl font-semibold md:text-3xl">
-              {user.name} ¿Para quién deseas cotizar?
+              {user?.name} ¿Para quién deseas cotizar?
             </h1>
-            <p className="">
-              Selecciona la opción que se ajuste más a tus necesidades.
-            </p>
+            <p>Selecciona la opción que se ajuste más a tus necesidades.</p>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Card
-              className={`box-content cursor-pointer border-2 border-transparent p-6 ${selectedOption === "self" ? "border-2 border-gray-500" : "shadow-xl shadow-gray-50"}`}
+              className={`cursor-pointer border-2 border-transparent p-6 ${selectedOption === "self" ? "border-2 border-gray-500" : "shadow-xl shadow-gray-50"}`}
               onClick={() => setSelectedOption("self")}
             >
               <div className="flex justify-end">
@@ -121,6 +131,7 @@ export default function FirstStep({
           {isSuccess && selectedOption && !isError && !isLoading && (
             <div className="relative">
               <div
+                ref={cardsRef}
                 className="flex gap-4 transition-transform duration-300 ease-in-out"
                 style={{
                   transform: `translateX(-${currentMobileCard * 105}%)`,
@@ -168,7 +179,7 @@ export default function FirstStep({
         </div>
       </div>
 
-      <div className="hidden gap-6 md:grid md:grid-cols-3">
+      <div className="hidden gap-6 md:grid md:grid-cols-3" ref={cardsRef}>
         {isSuccess &&
           !isError &&
           !isLoading &&
@@ -183,7 +194,11 @@ export default function FirstStep({
               handleNext={handleNext}
             />
           ))}
-        {isLoading && <Loader />}
+        {isLoading && selectedOption && (
+          <div className="col-span-3">
+            <Loader />
+          </div>
+        )}
         {isError && selectedOption && (
           <div className="col-span-3">
             <Error />

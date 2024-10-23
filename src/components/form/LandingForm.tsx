@@ -11,12 +11,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { FloatingLabelInput } from "./FloatingInputs";
-import { useRimacContext } from "@/context/context";
+
 import { FormType } from "@/types/type";
+
+import { useBearStore } from "@/zustand/zustand";
 import { useNavigate } from "react-router-dom";
 
 export default function LandingForm() {
-  const { updateFormData } = useRimacContext();
+  // const { updateFormData } = useRimacContext();
+
+  const updateUserData = useBearStore((state) => state.updateUserData);
+
   const navigate = useNavigate();
 
   const {
@@ -35,7 +40,8 @@ export default function LandingForm() {
   });
 
   const onSubmit = (data: FormType) => {
-    updateFormData(data);
+    // updateFormData(data);
+    updateUserData(data);
     navigate("/plans");
   };
   return (
@@ -70,8 +76,10 @@ export default function LandingForm() {
               control={control}
               rules={{
                 required: "Este campo es requerido",
-                minLength: { value: 8, message: "Mínimo 8 caracteres" },
-                maxLength: { value: 20, message: "Máximo 20 caracteres" },
+                pattern: {
+                  value: /^[0-9]{8}$/,
+                  message: "Debe ser un número de 8 dígitos",
+                },
               }}
               render={({ field }) => (
                 <FloatingLabelInput
@@ -83,9 +91,7 @@ export default function LandingForm() {
             />
           </div>
           {errors.documento && (
-            <p className="text-sm text-red-500 absoulute">
-              {errors.documento.message}
-            </p>
+            <p className="text-sm text-red-500">{errors.documento.message}</p>
           )}
         </div>
         <div>

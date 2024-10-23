@@ -1,39 +1,40 @@
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import { ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import Layout from "./components/layout/Layout";
 import Homepage from "@/pages/Homepage";
 import Plans from "./pages/Plans";
-import { RimacProvider, useRimacContext } from "./context/context";
+import { useBearStore } from "./zustand/zustand";
+
+const queryClient = new QueryClient();
 
 function App() {
   const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-    const { formData } = useRimacContext();
+    const { userData } = useBearStore();
 
-    if (!(formData.celular && formData.documento)) {
+    if (!(userData.celular && userData.documento)) {
       return <Navigate to={"/"} />;
     }
     return children;
   };
 
   return (
-    <BrowserRouter>
-      <RimacProvider>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Homepage />} />
-            <Route
-              path="/plans"
-              element={
-                <ProtectedRoute>
-                  <Plans />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
-        </Routes>
-      </RimacProvider>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route path="/" element={<Homepage />} />
+          <Route
+            path="/plans"
+            element={
+              <ProtectedRoute>
+                <Plans />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
+      </Routes>
+    </QueryClientProvider>
   );
 }
 

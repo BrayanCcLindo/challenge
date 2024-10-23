@@ -1,12 +1,13 @@
-import { useRimacContext } from "@/context/context";
 import { SecondStepType } from "@/types/type";
+import { useBearStore } from "@/zustand/zustand";
 
 export default function SecondStep({
   selectedPlan,
   selectedOption,
   user,
 }: SecondStepType) {
-  const { formData } = useRimacContext();
+  const { userData } = useBearStore();
+
   if (!selectedPlan) return;
   const discountPrice = selectedPlan.price - selectedPlan.price * 0.05;
 
@@ -28,9 +29,9 @@ export default function SecondStep({
         <div className="space-y-1">
           <h4 className="mb-2 font-bold">Responsable de pago</h4>
           <p>
-            {formData.tipoDocumento}: {formData.documento}
+            {userData.tipoDocumento}: {userData.documento}
           </p>
-          <p>Celular: {formData.celular}</p>
+          <p>Celular: {userData.celular}</p>
         </div>
         <div className="space-y-1">
           <h4 className="mb-2 font-bold">Plan elegido</h4>

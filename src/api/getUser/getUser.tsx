@@ -1,22 +1,24 @@
-import { UserType } from "@/types/type";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+async function getUserData() {
+  const response = await fetch(
+    "https://rimac-front-end-challenge.netlify.app/api/user.json",
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
 
 export function useGetUser() {
-  const [user, setUser] = useState<UserType | null>(null);
-  const [status, setStatus] = useState("idle");
-  const isUserLoading = status === "pending";
-  const isUserSuccess = status === "success";
-  const isUserError = status === "error";
-
-  useEffect(() => {
-    setStatus("pending");
-    fetch("https://rimac-front-end-challenge.netlify.app/api/user.json")
-      .then((response) => response.json())
-      .then((data) => {
-        setUser(data);
-        setStatus("success");
-      })
-      .catch(() => setStatus("error"));
-  }, []);
-  return { user, isUserLoading, isUserSuccess, isUserError };
+  const response = useQuery({ queryKey: ["user"], queryFn: getUserData });
+  return {
+    ...response,
+    user: response.data,
+    isUserLoading: response.isLoading,
+    isUserError: response.isError,
+    isUserSucces: response.isSuccess,
+  };
 }
